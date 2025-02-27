@@ -9,34 +9,7 @@ resources:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  storageAccountName: 'rnetestblob'
-  storageContainerName: 'example-static-files'
-  sasToken: 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-02-27T15:29:18Z&st=2025-02-27T07:29:18Z&spr=https&sig=BG5qrhlt1jxfgdjCOLC8uFb9edVjBXHEPQWZeKfZ1ic%3D'
-
 steps:
-- script: |
-    echo "Activating Simply Static plugin..."
-    wp plugin activate simply-static --path=/home/site/wwwroot
-  displayName: 'Activate Plugin'
-
-- script: |
-    echo "Exporting WordPress site to static files..."
-    wp simply-static generate --url=https://rnsetest0001-gkbudcd8gfhabgbm.centralus-01.azurewebsites.net --path=/home/site/wwwroot
-  displayName: 'Export Static Files'
-
-- task: AzureFileCopy@4
-  inputs:
-    SourcePath: '/home/site/wwwroot/wp-content/uploads/simply-static/example.com/'
-    azureSubscription: 'wordpress'
-    Destination: 'AzureBlob'
-    storage: '$(storageAccountName)'
-    ContainerName: '$(storageContainerName)'
-    BlobPrefix: 'static-site/'
-    AdditionalArgumentsForBlobCopy: '--sas-token=$(sasToken)'
-  displayName: 'Upload Static Files to Blob Storage'
-
-- script: |
-    echo "Deactivating Simply Static plugin..."
-    wp plugin deactivate simply-static --path=/home/site/wwwroot
-  displayName: 'Deactivate Plugin'
+  - script: |
+      echo "Webhook triggered! Starting pipeline..."
+    displayName: 'Webhook Triggered'
