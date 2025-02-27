@@ -5,7 +5,6 @@ resources:
   webhooks:
     - webhook: wordpress-webhook
       connection: wordpress-service-connection
-
 pool:
   vmImage: 'ubuntu-latest'
 
