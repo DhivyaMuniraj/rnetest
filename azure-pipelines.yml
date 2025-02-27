@@ -22,41 +22,36 @@ stages:
   - job: ExportSite
     steps:
     - script: |
-        echo "Installing Simply Static plugin..."
-        sudo apt update && sudo apt install -y wget unzip
-        wget https://github.com/wp-cli/wp-cli/releases/download/v2.6.0/wp-cli-2.6.0.phar -O wp
-        chmod +x wp
-        # mv wp /usr/local/bin/wp
-        wp core download
-        wp --allow-root plugin install simply-static --activate --path=/home/site/wwwroot
+        echo "Installing Simply Static plugin..."       
+        wp plugin install simply-static --activate --path=/home/site/wwwroot --allow-root
       displayName: 'Install and Activate Simply Static Plugin'
 
-    - script: |
-        echo "Exporting WordPress site to static files..."
-        wp --allow-root simply-static generate --url=$(wordpress_url) --path=/home/site/wwwroot
-      displayName: 'Export Static Files'
+#     - script: |
+#         echo "Exporting WordPress site to static files..."
+#         wp --allow-root simply-static generate --url=$(wordpress_url) --path=/home/site/wwwroot
+#       displayName: 'Export Static Files'
 
-- stage: Deploy_Static_Site
-  displayName: 'Deploy Static Site to Azure Blob'
-  dependsOn: Export_Static_Site
-  condition: succeeded()
-  jobs:
-  - job: UploadToBlob
-    steps:
-    - task: AzureFileCopy@4
-      inputs:
-        SourcePath: '/home/site/wwwroot/wp-content/uploads/simply-static/'
-        azureSubscription: 'wordpress'
-        Destination: 'AzureBlob'
-        storage: '$(storage_account)'
-        ContainerName: '$(container_name)'
-        BlobPrefix: 'static-site/'
-        AdditionalArgumentsForBlobCopy: '--sas-token=$(sas_token)'
-      displayName: 'Upload Static Files to Azure Blob Storage'
+# - stage: Deploy_Static_Site
+#   displayName: 'Deploy Static Site to Azure Blob'
+#   dependsOn: Export_Static_Site
+#   condition: succeeded()
+#   jobs:
+#   - job: UploadToBlob
+#     steps:
+#     - task: AzureFileCopy@4
+#       inputs:
+#         SourcePath: '/home/site/wwwroot/wp-content/uploads/simply-static/'
+#         azureSubscription: 'wordpress'
+#         Destination: 'AzureBlob'
+#         storage: '$(storage_account)'
+#         ContainerName: '$(container_name)'
+#         BlobPrefix: 'static-site/'
+#         AdditionalArgumentsForBlobCopy: '--sas-token=$(sas_token)'
+#       displayName: 'Upload Static Files to Azure Blob Storage'
 
-    - script: |
-        echo "Deactivating Simply Static plugin..."
-        wp --allow-root plugin deactivate simply-static --path=/home/site/wwwroot
-        echo "Deleting Simply Static plugin..."
-        wp --allow-root plugin delete simply-static --path=/home/site/wwwroot
-      displayName: 'Clean Up Plugin'
+#     - script: |
+#         echo "Deactivating Simply Static plugin..."
+#         wp --allow-root plugin deactivate simply-static --path=/home/site/wwwroot
+#         echo "Deleting Simply Static plugin..."
+#         wp --allow-root plugin delete simply-static --path=/home/site/wwwroot
+#       displayName: 'Clean Up Plugin'
