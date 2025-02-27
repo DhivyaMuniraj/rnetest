@@ -26,7 +26,8 @@ stages:
         sudo apt update && sudo apt install -y wget unzip
         wget https://github.com/wp-cli/wp-cli/releases/download/v2.6.0/wp-cli-2.6.0.phar -O wp
         chmod +x wp
-        mv wp /usr/local/bin/wp
+        # mv wp /usr/local/bin/wp
+        wp core download
         wp --allow-root plugin install simply-static --activate --path=/home/site/wwwroot
       displayName: 'Install and Activate Simply Static Plugin'
 
